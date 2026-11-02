@@ -1,41 +1,81 @@
-This pack is ported using the Iris to Horizon translator built into Horizon.
-This pack is based on TrueLightFX Lite v5.6.3
+# TrueLightFX Lite (Horizon Port) v5.6.3
 
-Note for Horizon users:
-Make sure to set `graphicsApi:vulkan` in your graphics settings (Vulkan is required for depth buffer features).
+Ported using the built-in Iris-to-Horizon translator.
 
-THIS IS NOT WORKING WITH OPTIFINE OR IRIS ONLY USE THIS SHADER WITH HORIZON!
+Designed specifically for Horizon. Not compatible with OptiFine or standalone Iris.
 
+---
 
-WORKING AND NOT WORKING RN: 
-   Setting / Feature        │      Status in Horizon       │ Details
-  ──────────────────────────┼──────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   ENABLE_SHADOWS           │           Working            │ Sunlight shadow projection via Vulkan depth map.
-   FLAT_LIGHTING            │           Working            │ Disables vanilla directional shading so TrueLightFX lighting works properly.
-   SUN_BRIGHTNESS           │           Working            │ Modulates sunlight radiance.
-   SUN_RAYS (God Rays)      │           Working            │ Implemented via 32-tap screen-space raymarching in final.fsh.
-   SHADOW_DARKNESS          │           Working            │ Controls shadow darkness floor.
-   SHADOW_BLUENESS          │           Working            │ Tints shadowed regions with ambient sky color.
-   shadowMapResolution      │           Working            │ Supports 256 up to 4096.
-   shadowDistance           │           Working            │ Max distance for shadow rendering.
-   shadowIntervalSize       │           Working            │ Shadow map refocus step (set to 7.0 for stability).
-   SHADOW_PIXEL             │           Working            │ 0 = smooth shadows, >0 = retro grid snapping.
-   SHADOW_ENTITY            │           Working            │ Full shadow casting for players and entities.
-   WATER_BRIGHTNESS / B / A │           Working            │ Controls water luminosity, blueness, and transparency.
-   REALISTIC_WAVES          │           Working            │ Vertex wave displacement on water blocks.
-   REFLECTIONS              │           Working            │ Screen-space reflection sampling on water surfaces.
-   WATER_CAUSTICS           │           Working            │ Animated underwater light patterns on seafloor blocks.
-   RAIN_INTENSITY           │           Working            │ Screen-space rain streak blending.
-   ENABLE_FOG               │           Working            │ Atmospheric and underwater fog distance blend.
-   FOG_ENHANCEMENT          │           Working            │ Warm golden horizon fog tinting during daytime.
-   BLOOM & BLOOM_STRENGTH   │           Working            │ Soft bloom pass in composite/final.
-   CLOUD_STYLE              │           Working            │ 0 = classic TrueLightFX clouds, 1 = volumetric procedural clouds.
-   VIBRANCE                 │           Working            │ Saturation enhancement curve in post-processing.
-   FXAA                     │           Working            │ Fast Approximate Anti-Aliasing (edge-detected in final pass).
-   TAA                      │   ⚠ Unsupported by Horizon   │ Horizon's logs state gbuffers_terrain: zero for now: taaOffset. Sub-pixel camera jitter is not yet provided by Horizon's engine
-   MOTION_BLUR              │           Working            │ Velocity-based motion blur in composite.fsh.
-   WAVY_PLANTS              │           Working            │ Foliage swaying using wind noise in vertex stage.
-   HAND_DYNAMIC_LIGHTING    │           Working            │ Lighting from held light sources.
-   HIGHLIGHT_WAXED          │           Working            │ Highlights waxed copper when holding honeycomb.
-   GLOWING_ORES             │           Working            │ Self-illumination emission for ores and flowers.
-   OUTLINE_MODE / R / G / B │ ❌ Not Functional in Horizon │ Horizon renders block outlines natively with internal Vulkan line shaders rather than routing through gbuffers_basic.
+## Requirements
+
+Horizon must be configured to use Vulkan before launching.
+
+```ini
+graphicsApi:vulkan
+```
+
+Vulkan is required for the depth buffer features used by this shader.
+
+---
+
+## Feature Compatibility
+
+| Setting / Feature | Status | Details |
+|---|---|---|
+| `ENABLE_SHADOWS` | Working | Sunlight shadow projection using the Vulkan depth map. |
+| `FLAT_LIGHTING` | Working | Disables vanilla directional shading. |
+| `SUN_BRIGHTNESS` | Working | Controls sunlight intensity. |
+| `SUN_RAYS` | Working | 32-tap screen-space raymarching in `final.fsh`. |
+| `SHADOW_DARKNESS` | Working | Controls minimum shadow darkness. |
+| `SHADOW_BLUENESS` | Working | Adds ambient sky color to shadowed areas. |
+| `shadowMapResolution` | Working | Supports resolutions from 256 to 4096. |
+| `shadowDistance` | Working | Controls shadow rendering distance. |
+| `shadowIntervalSize` | Working | Controls shadow map refocusing. Recommended value: 7.0. |
+| `SHADOW_PIXEL` | Working | 0 for smooth shadows, higher values for pixelated shadows. |
+| `SHADOW_ENTITY` | Working | Enables shadows for players and entities. |
+| `WATER_BRIGHTNESS / B / A` | Working | Controls water brightness, blueness and transparency. |
+| `REALISTIC_WAVES` | Working | Adds vertex-based wave displacement to water. |
+| `REFLECTIONS` | Working | Screen-space reflections on water surfaces. |
+| `WATER_CAUSTICS` | Working | Animated underwater lighting patterns on the seafloor. |
+| `RAIN_INTENSITY` | Working | Screen-space rain effects. |
+| `ENABLE_FOG` | Working | Atmospheric and underwater fog blending. |
+| `FOG_ENHANCEMENT` | Working | Adds warm horizon fog during daytime. |
+| `BLOOM / BLOOM_STRENGTH` | Working | Soft bloom effect in the composite and final passes. |
+| `CLOUD_STYLE` | Working | 0 for classic TrueLightFX clouds, 1 for procedural volumetric clouds. |
+| `VIBRANCE` | Working | Adjusts saturation during post-processing. |
+| `FXAA` | Working | Fast Approximate Anti-Aliasing in the final pass. |
+| `TAA` | Unsupported | Horizon does not currently provide the required sub-pixel camera jitter (`taaOffset`). |
+| `MOTION_BLUR` | Working | Velocity-based motion blur in `composite.fsh`. |
+| `WAVY_PLANTS` | Working | Adds wind-based movement to foliage. |
+| `HAND_DYNAMIC_LIGHTING` | Working | Adds lighting from held light sources. |
+| `HIGHLIGHT_WAXED` | Working | Highlights waxed copper when holding honeycomb. |
+| `GLOWING_ORES` | Working | Adds self-illumination to ores and flowers. |
+| `OUTLINE_MODE / R / G / B` | Broken | Horizon handles outlines through its internal Vulkan line shaders rather than `gbuffers_basic`. |
+
+---
+
+## Known Limitations
+
+### TAA
+
+Temporal Anti-Aliasing is currently unsupported because Horizon does not provide the camera jitter functionality required by the shader. `taaOffset` is currently zero in `gbuffers_terrain`.
+
+### Outlines
+
+Custom outline rendering is broken. Horizon handles outlines through its internal Vulkan rendering system rather than `gbuffers_basic`.
+
+---
+
+## Configuration Notes
+
+- Use Vulkan as the graphics API.
+- Set `shadowIntervalSize` to `7.0` for more stable shadow rendering.
+- Set `SHADOW_PIXEL` to `0` for smooth shadows.
+
+---
+
+## Compatibility
+
+This port is intended exclusively for Horizon.
+
+It is not designed for OptiFine or standalone Iris.
