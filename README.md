@@ -1,4 +1,4 @@
-# TrueLightFX Lite (Horizon Port) v5.6.3
+# TrueLightFX Lite (Horizon Port) of IRIS&OPTIFINE v5.6.3
 
 Ported using the built-in Iris-to-Horizon translator.
 
